@@ -1,3 +1,6 @@
+import json
+import os
+
 from openai import OpenAI
 
 class QwenMaxCommentAssistant():
@@ -15,7 +18,8 @@ class QwenMaxCommentAssistant():
 
     @classmethod
     def load_prompt_template(cls):
-        with open("./comment_prompt.txt", 'r', encoding='utf-8') as file:
+        current_directory = os.path.dirname(__file__)
+        with open(os.path.join(current_directory, "comment_prompt.txt"), 'r', encoding='utf-8') as file:
             content = file.read()
         cls.comment_prompt = content
 
@@ -44,9 +48,12 @@ class QwenMaxCommentAssistant():
                 # {'role': 'system', 'content': 'You are a helpful assistant.'},
                 {'role': 'user', 'content': current_comment_prompt}],
         )
-        print(completion.model_dump_json())
 
-if __name__ == "__main__":
+        res = json.loads(completion.json())
+        # print(res, type(res))
+        return res['choices'][0]['message']['content']
+
+if __name__ == "__test__":
     article = "始终不明白，为何出价100万了，老父亲都不肯卖掉！ #自然奇观  #奇闻趣事  #户外旅行  #乡村风景  #航拍最美家乡"
     comments = [
         "我们乡下随便盖栋房子都100w",
